@@ -1,7 +1,7 @@
-import { CreatePostInput, UpdatePostInput } from './post.types';
+import { CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
 import { PostEntity } from './post.entity';
 import {  Injectable, NotFoundException } from '@nestjs/common';
-import { ObjectID, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -40,8 +40,12 @@ export class PostService {
 //---------------------------- FindOne ----------------------------//
 
   async findOne(id: string): Promise<PostEntity> {
-      const foundPost = await this.postRepository.findOneOrFail(id)
-      return foundPost;
+      const foundPost = await this.postRepository.findOne(id)
+      if(foundPost) {
+        return foundPost;
+      } else {
+        throw new NotFoundException(`Post with an ID:[${id}] is not found`)
+      }
   }
 
 //---------------------------- UpdateOne ----------------------------//
@@ -63,7 +67,7 @@ export class PostService {
 
 //---------------------------- Remove ----------------------------//
 
-  async remove(id: string)  {
+  async remove(id: string):Promise<DeleteNotication | void>  {
   
     const findFirst = await this.findOne(id)
     if(findFirst) {
@@ -71,8 +75,6 @@ export class PostService {
       return {
         message: 'Deleted'
       } 
-    } else {
-     throw new NotFoundException(`Post with an ID:[${id}] is not found`)
     }
   }
 
