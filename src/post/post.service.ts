@@ -1,38 +1,80 @@
-import { Post } from './entities/post.entity';
-import { Injectable } from '@nestjs/common';
-import { CreatePostInput } from './dto/create-post.input';
-import { UpdatePostInput } from './dto/update-post.input';
-import { Repository } from 'typeorm';
+import { CreatePostInput, UpdatePostInput } from './post.types';
+import { PostEntity } from './post.entity';
+import {  Injectable, NotFoundException } from '@nestjs/common';
+import { ObjectID, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostService {
 
   constructor(
-    @InjectRepository(Post)
-    private postRepository: Repository<Post>,
+    @InjectRepository(PostEntity)
+    private postRepository: Repository<PostEntity>,
   ) {}
 
- async create(createPostInput: CreatePostInput) {
-    const newPost = await this.postRepository.save(createPostInput)
-    console.log(newPost)
-    return newPost;
+
+//---------------------------- CRUD Functionality ----------------------------//
+
+
+//---------------------------- Create ----------------------------//
+
+  async create(createPostInput: CreatePostInput): Promise<PostEntity> {
+
+    const mutatedPost = {
+      ...createPostInput,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+
+      const newPost = await this.postRepository.save(mutatedPost) 
+      return newPost;
   }
 
- async findAll() {
-  const foundPost = await this.postRepository.find()
-  return foundPost;
-}
+//---------------------------- FindAll ----------------------------//
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} post`;
-  // }
+  async findAll(): Promise<PostEntity[]> {
+    const foundPost = await this.postRepository.find()
+    return foundPost;
+  }
 
-  // update(id: number, updatePostInput: UpdatePostInput) {
-  //   return `This action updates a #${id} post`;
-  // }
+//---------------------------- FindOne ----------------------------//
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} post`;
-  // }
+  async findOne(id: string): Promise<PostEntity> {
+      const foundPost = await this.postRepository.findOneOrFail(id)
+      return foundPost;
+  }
+
+//---------------------------- UpdateOne ----------------------------//
+
+  async update(id: string, body:UpdatePostInput) {
+    const findFirst = await this.findOne(id)
+    if(findFirst) {
+      const updatedData = {
+        ...findFirst,
+        ...body,
+        updatedAt: new Date()
+      }
+     await this.postRepository.update(id,updatedData)
+     return updatedData; 
+    } else {
+     throw new NotFoundException(`Post with an ID:[${id}] is not found`)
+    }
+  }
+
+//---------------------------- Remove ----------------------------//
+
+  async remove(id: string)  {
+  
+    const findFirst = await this.findOne(id)
+    if(findFirst) {
+      await this.postRepository.delete(id)
+      return {
+        message: 'Deleted'
+      } 
+    } else {
+     throw new NotFoundException(`Post with an ID:[${id}] is not found`)
+    }
+  }
+
+
 }

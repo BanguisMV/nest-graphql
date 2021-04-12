@@ -1,8 +1,7 @@
+import { Post, CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
 import { Resolver, Query, Args,Mutation } from '@nestjs/graphql';
 import { PostService } from './post.service';
-import { Post } from './entities/post.entity';
-import { CreatePostInput } from './dto/create-post.input';
-import { UpdatePostInput } from './dto/update-post.input';
+
 @Resolver(() => Post)
 export class PostResolver {
   constructor(private readonly postService: PostService) {}
@@ -12,24 +11,25 @@ export class PostResolver {
     return this.postService.create(createPostInput);
   }
   
-  @Query(() => [Post], { name: 'post' })
-  findAll() {
+  @Query(() => [Post], { name: 'posts' })
+  findAll(): Promise<Post[]> {
     return this.postService.findAll();
   }
 
-  // @Query(() => Post, { name: 'post' })
-  // findOne(@Args('id', { type: () => Int }) id: number) {
-  //   return this.postService.findOne(id);
-  // }
 
-  // @Mutation(() => Post)
-  // updatePost(@Args('updatePostInput') updatePostInput: UpdatePostInput) {
-  //   return this.postService.update(updatePostInput.id, updatePostInput);
-  // }
+  @Query(() => Post, { name: 'post' })
+  findOne(@Args('id', { type: () => String }) id: string): Promise<Post> {
+    return this.postService.findOne(id);
+  }
 
-  // @Mutation(() => Post)
-  // removePost(@Args('id', { type: () => Int }) id: number) {
-  //   return this.postService.remove(id);
-  // }
+  @Mutation(() => Post)
+  updatePost(@Args('id') id: string, @Args('body') body:UpdatePostInput ) {
+    return this.postService.update(id,body);
+  }
+
+  @Mutation(() => DeleteNotication)
+  deletePost(@Args('id') id: string): Promise<DeleteNotication | void> {
+    return this.postService.remove(id);
+  }
 
 }

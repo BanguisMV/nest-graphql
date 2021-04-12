@@ -4,7 +4,7 @@
 
 type Post {
   _id: ID!
-  body: String!
+  content: String!
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -14,14 +14,26 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type DeleteNotication {
+  message: String
+}
+
 type Query {
-  post: [Post!]!
+  posts: [Post!]!
+  post(id: String!): Post!
 }
 
 type Mutation {
   createPost(createPostInput: CreatePostInput!): Post!
+  updatePost(body: UpdatePostInput!, id: String!): Post!
+  deletePost(id: String!): DeleteNotication!
 }
 
 input CreatePostInput {
-  body: String!
+  content: String!
+}
+
+input UpdatePostInput {
+  content: String
+  updatedAt: DateTime
 }
