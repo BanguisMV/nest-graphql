@@ -3,6 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './post/post.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [GraphQLModule.forRoot({
@@ -14,7 +15,7 @@ import { PostModule } from './post/post.module';
     synchronize: true,
     useUnifiedTopology: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
-  }), PostModule],
+  }), PostModule, UserModule],
   controllers: [],
   providers: [],
 })

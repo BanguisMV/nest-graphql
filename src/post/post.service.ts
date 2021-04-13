@@ -8,8 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class PostService {
 
   constructor(
-    @InjectRepository(PostEntity)
-    private postRepository: Repository<PostEntity>,
+    @InjectRepository(PostEntity) private postRepository: Repository<PostEntity>,
   ) {}
 
 

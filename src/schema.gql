@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type Post {
-  _id: ID!
+  _id: ID
   content: String!
   createdAt: DateTime
   updatedAt: DateTime
@@ -18,15 +18,33 @@ type DeleteNotication {
   message: String
 }
 
+type User {
+  _id: ID
+  firstName: String!
+  lastName: String!
+  userName: String!
+  password: String!
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
 type Query {
   posts: [Post!]!
   post(id: String!): Post!
+
+  """Find One User"""
+  user(id: String): User!
+
+  """Find Many Users"""
+  users: [User!]!
 }
 
 type Mutation {
   createPost(createPostInput: CreatePostInput!): Post!
   updatePost(body: UpdatePostInput!, id: String!): Post!
   deletePost(id: String!): DeleteNotication!
+  register(registerInput: CreateUserInput!): User!
+  deleteUser(id: String!): DeleteNotication!
 }
 
 input CreatePostInput {
@@ -36,4 +54,11 @@ input CreatePostInput {
 input UpdatePostInput {
   content: String
   updatedAt: DateTime
+}
+
+input CreateUserInput {
+  firstName: String!
+  lastName: String!
+  userName: String!
+  password: String!
 }

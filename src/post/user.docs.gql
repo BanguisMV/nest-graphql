@@ -1,0 +1,46 @@
+mutation createPost {
+  createPost(createPostInput:{content:"Robin: i want to live!"}) {
+  	_id
+    content
+    createdAt
+    		updatedAt
+  }
+}
+
+
+
+mutation updatePost {
+  updatePost(
+    id:"60741c24990511193c0349dd",
+    body:{content:"Whitebeard: One Piece, Does Exiiiiist!"}){
+    updatedAt
+    createdAt
+  	content
+  }  	
+}
+
+
+
+query GetPosts {
+  posts {
+    _id
+		content
+    createdAt
+    updatedAt
+  }
+}
+
+query GetPost($id:String!) {
+  post(id:$id) {
+    _id
+    content
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeletePost {
+ deletePost(id:"607413fbbfba0e0908ba3fa6"){
+  message
+}
+}
