@@ -1,18 +1,19 @@
+import { PostSchema } from './post.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './../user/user.module';
-import { UserService } from './../user/user.service';
-import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostEntity } from './post.entity';
+import { JwtModule } from '@nestjs/jwt';;
 import { Module } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostResolver } from './post.resolver';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PostEntity]), JwtModule.register({
+  imports: [
+  MongooseModule.forFeature([{name:'Post', schema: PostSchema }]),
+  JwtModule.register({
     secret: 'markyboy',
     signOptions: { expiresIn: '1h' },
   }), UserModule],
   providers: [PostResolver, PostService],
-
+  exports:[PostService]
 })
 export class PostModule {}

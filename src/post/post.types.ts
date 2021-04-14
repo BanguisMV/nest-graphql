@@ -1,4 +1,4 @@
-import { User } from './../user/user.types';
+import { UserType } from './../user/user.types';
 import { CreateDateColumn, UpdateDateColumn, ObjectID, OneToMany } from 'typeorm';
 import { ObjectType, Field, ID, InputType, PartialType } from '@nestjs/graphql';
 
@@ -11,8 +11,8 @@ export class Post {
   @Field()
   content: string;
 
-  @Field(type => User)
-  author: User;
+  @Field(type => UserType)
+  author: UserType;
 
   @Field({ nullable: true })
   createdAt?: Date;

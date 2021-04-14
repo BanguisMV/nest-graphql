@@ -1,11 +1,11 @@
+import { UserDocument } from './user.schema';
 import { DeleteNotication } from './../post/post.types';
 import { CreateUserInput, JWT } from './user.types';
-import { UserEntity } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { Repository, ObjectID } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { GraphQLError } from 'graphql';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
@@ -16,22 +16,22 @@ export class UserService {
 
 
     constructor(
-        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
-        private jwtService: JwtService
+      @InjectModel('User') private userModel: Model<UserDocument>,
+       private jwtService: JwtService
       ) {}
 
       //---------------------------- CRUD ----------------------------//
 
       //---------------------------- Find All ----------------------------//
 
-      async findAll():Promise<UserEntity[]> {
-        const foundPost = await this.userRepository.find()
+      async findAll():Promise<UserDocument[]> {
+        const foundPost = await this.userModel.find().populate('posts').exec()
         return foundPost
       }
 
       //---------------------------- By ID ----------------------------//
-      async findUserByID(id:string): Promise<UserEntity | undefined> {  
-            const foundPost = await this.userRepository.findOne(id)
+      async findUserByID(id:string): Promise<UserDocument | undefined> {  
+            const foundPost = await this.userModel.findById(id).populate('posts').exec()
             if(foundPost) {
               return foundPost;
             } else {
@@ -40,8 +40,8 @@ export class UserService {
       }
 
       //---------------------------- By Username----------------------------//
-      async findByUserName(username:string): Promise<UserEntity | undefined> {
-        const foundPost = await this.userRepository.findOne({ userName: username.toLowerCase() })
+      async findByUserName(username:string): Promise<UserDocument | undefined> {
+        const foundPost = await this.userModel.findOne({ userName: username.toLowerCase() })
         if(foundPost) {
           return foundPost;
         } else {
@@ -50,10 +50,9 @@ export class UserService {
       }
       
       //---------------------------- Register ---------------------------//
-      async register(createRegisterInput: CreateUserInput): Promise<UserEntity | undefined> {
+      async register(createRegisterInput: CreateUserInput): Promise<UserDocument | undefined> {
         // Check first if the username is already taken
           const doesUserExistsAlready = await this.findByUserName(createRegisterInput.userName)
-
             if(doesUserExistsAlready?.userName !== createRegisterInput.userName.toLowerCase()) {
               const mutatedUserInput = {
                 ...createRegisterInput,
@@ -62,7 +61,7 @@ export class UserService {
                 createdAt: new Date(),
                 updatedAt: new Date()
               }
-              const savedInput = await this.userRepository.save(mutatedUserInput) 
+              const savedInput = await this.userModel.create(mutatedUserInput)
               return savedInput
             } else {
               throw new GraphQLError('User already exists.')
@@ -73,7 +72,7 @@ export class UserService {
       async deleteUser(id:string):Promise<DeleteNotication> {
         const userDoesExist = await this.findUserByID(id)
         if(userDoesExist) {
-          await this.userRepository.delete(id) 
+          await this.userModel.remove(id)
           return {
             message: 'Deleted'
           }

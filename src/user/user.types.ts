@@ -1,10 +1,9 @@
 import { Post } from './../post/post.types';
-import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ObjectType, Field, ID, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, ID, InputType, PartialType } from '@nestjs/graphql';
 
 
 @ObjectType()
-export class User {
+export class UserType {
 
   @Field(type => ID, { nullable: true })
   _id?: string;
@@ -22,7 +21,7 @@ export class User {
   password: string;
 
   @Field(type => [Post],{ nullable: true })
-  posts: Post;
+  posts: Post[];
 
   @Field({ nullable: true })
   createdAt?: Date;
@@ -38,25 +37,26 @@ export class CreateUserInput {
 
 
   @Field()
-  firstName: string;
+  firstName?: string;
 
   @Field()
-  lastName: string;
+  lastName?: string;
 
   @Field()
-  userName: string;
+  userName?: string;
 
   @Field()
-  password: string;
-  
-  @CreateDateColumn({ type: 'timestamp', name: 'created_date', default: () => 'LOCALTIMESTAMP' })
-  createdAt?: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', name: 'updated_date', default: () => 'LOCALTIMESTAMP' })
-  updatedAt?: Date;
+  password?: string;
 
 }
 
+@InputType()
+export class UpdateUser extends PartialType(CreateUserInput) {
+
+  @Field()
+  updatedAt?: Date;
+
+}
 
 @ObjectType()
 export class DeleteNotication {

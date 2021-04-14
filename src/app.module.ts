@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [GraphQLModule.forRoot({
@@ -14,13 +14,7 @@ import { AuthModule } from './auth/auth.module';
       headers: req.headers
     }))
   }), 
-  TypeOrmModule.forRoot({
-    type: 'mongodb',
-    url:'mongodb://localhost:27017/blog',
-    synchronize: true,
-    useUnifiedTopology: true,
-    entities: ['dist/**/*.entity{.ts,.js}'],
-  }), PostModule, UserModule, AuthModule],
+  MongooseModule.forRoot('mongodb://localhost/blog'), PostModule, UserModule, AuthModule],
   controllers: [],
   providers: [AuthService],
 })

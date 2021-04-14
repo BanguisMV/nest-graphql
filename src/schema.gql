@@ -2,7 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
+type UserType {
   _id: ID
   firstName: String!
   lastName: String!
@@ -25,7 +25,7 @@ type JWT {
 type Post {
   _id: ID
   content: String!
-  author: User!
+  author: UserType!
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -39,17 +39,17 @@ type Query {
   post(id: String!): Post!
 
   """Find One User"""
-  user(id: String): User!
+  user(id: String): UserType!
 
   """Find Many Users"""
-  users: [User!]!
+  users: [UserType!]!
 }
 
 type Mutation {
   createPost(createPostInput: CreatePostInput!): Post!
   updatePost(body: UpdatePostInput!, id: String!): Post!
   deletePost(id: String!): DeleteNotication!
-  register(registerInput: CreateUserInput!): User!
+  registerUser(registerInput: CreateUserInput!): UserType!
   deleteUser(id: String!): DeleteNotication!
 
   """Login"""

@@ -1,22 +1,23 @@
-import { UserEntity } from './user.entity';
-import { AuthGuard } from './../auth/auth.guard';
-import { DeleteNotication } from './../post/post.types';
+import { User } from './user.schema';
+import { PostService } from './../post/post.service';
+import { DeleteNotication, Post } from './../post/post.types';
 import { UserService } from './user.service';
-import { User, CreateUserInput, JWT } from './user.types';
-import { Injectable, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Args, Mutation, Context } from '@nestjs/graphql';
+import { UserType, CreateUserInput, JWT,} from './user.types';
+import { Injectable } from '@nestjs/common';
+import { Resolver, Query, Args, Mutation, ResolveField, Parent } from '@nestjs/graphql';
 
-@Resolver(() => User)
+@Resolver(() => UserType)
 @Injectable()
 export class UserResolver {
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,private readonly postService: PostService) {}
 
 
-  @Mutation(() => User)
-  register(@Args('registerInput') createRegisterInput: CreateUserInput):Promise<UserEntity> {
+  @Mutation(() => UserType)
+  registerUser(@Args('registerInput') createRegisterInput: CreateUserInput):Promise<User> {
     return this.userService.register(createRegisterInput);
   }
+
 
   @Mutation(() => DeleteNotication)
   deleteUser(@Args('id') id: string):Promise<DeleteNotication> {
@@ -28,15 +29,19 @@ export class UserResolver {
     return this.userService.login(username, password);
   }
 
-  @Query(() => User, { name: 'user', description:"Find One User" })
-  findByUserName(@Args('id', { nullable:true }) id: string):Promise<UserEntity> {
+  @Query(() => UserType, { name: 'user', description:"Find One User" })
+  findByUserName(@Args('id', { nullable:true }) id: string):Promise<User> {
        return this.userService.findUserByID(id);
   }
   
-  @UseGuards(AuthGuard)
-  @Query(() =>[User], { name: 'users', description:"Find Many Users" })
-  findManyUsers(@Context('user') user:any):Promise<UserEntity[]> {
+  @Query(() =>[UserType], { name: 'users', description:"Find Many Users" })
+  findManyUsers():Promise<User[]> {
     return this.userService.findAll();
   }
+
+  // @ResolveField(() =>[UserType], { name: 'posts'})
+  // async posts(@Parent() parent: any) {
+  //   return this.postService.findAll()
+  // }
 
 }

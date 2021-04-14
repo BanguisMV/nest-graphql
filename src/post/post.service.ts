@@ -1,15 +1,16 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { PostDocument } from './post.schema';
 import { GraphQLError } from 'graphql';
 import { CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
-import { PostEntity } from './post.entity';
 import {  Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class PostService {
 
   constructor(
-    @InjectRepository(PostEntity) private postRepository: Repository<PostEntity>,
+    @InjectModel('Post') private postModel: Model<PostDocument>,
+
   ) {}
 
 
@@ -20,28 +21,31 @@ export class PostService {
 
   async create(createPostInput: CreatePostInput, userID:string) {
 
-    const mutatedPost = {
+    const mutatedPost:any = {
       ...createPostInput,
       author:userID,
       createdAt: new Date(),
       updatedAt: new Date()
     }
 
-      const newPost = await this.postRepository.save(mutatedPost) 
+      const newPost = await this.postModel.create(mutatedPost) 
       return newPost;
   }
 
 //---------------------------- FindAll ----------------------------//
 
-  async findAll(): Promise<PostEntity[]> {
-    const foundPost = await this.postRepository.find()
-    return foundPost;
+  async findAll(): Promise<PostDocument[] > {
+  
+     const populated = await this.postModel.find()
+     console.log(populated)
+      return populated
+
   }
 
 //---------------------------- FindOne ----------------------------//
 
-  async findOne(id: string): Promise<PostEntity> {
-      const foundPost = await this.postRepository.findOne(id)
+  async findOne(id: string): Promise<PostDocument> {
+      const foundPost = await this.postModel.findById(id).populate('author', null).exec()
       if(foundPost) {
         return foundPost;
       } else {
@@ -59,7 +63,7 @@ export class PostService {
         ...body,
         updatedAt: new Date()
       }
-     await this.postRepository.update(id,updatedData)
+     await this.postModel.findByIdAndUpdate(id,body)
      return updatedData; 
     } else {
       throw new GraphQLError(`Post with an ID:[${id}] is not found`)
@@ -72,7 +76,7 @@ export class PostService {
   
     const findFirst = await this.findOne(id)
     if(findFirst) {
-      await this.postRepository.delete(id)
+      await this.postModel.remove(id)
       return {
         message: 'Deleted'
       } 
