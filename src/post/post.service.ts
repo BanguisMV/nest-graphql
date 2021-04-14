@@ -1,6 +1,7 @@
+import { GraphQLError } from 'graphql';
 import { CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
 import { PostEntity } from './post.entity';
-import {  Injectable, NotFoundException } from '@nestjs/common';
+import {  Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -17,10 +18,11 @@ export class PostService {
 
 //---------------------------- Create ----------------------------//
 
-  async create(createPostInput: CreatePostInput): Promise<PostEntity> {
+  async create(createPostInput: CreatePostInput, userID:string) {
 
     const mutatedPost = {
       ...createPostInput,
+      author:userID,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -43,7 +45,7 @@ export class PostService {
       if(foundPost) {
         return foundPost;
       } else {
-        throw new NotFoundException(`Post with an ID:[${id}] is not found`)
+        throw new GraphQLError(`Post with an ID:[${id}] is not found`)
       }
   }
 
@@ -60,7 +62,7 @@ export class PostService {
      await this.postRepository.update(id,updatedData)
      return updatedData; 
     } else {
-     throw new NotFoundException(`Post with an ID:[${id}] is not found`)
+      throw new GraphQLError(`Post with an ID:[${id}] is not found`)
     }
   }
 

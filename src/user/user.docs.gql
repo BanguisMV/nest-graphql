@@ -1,0 +1,45 @@
+mutation {
+  register(registerInput:{
+    lastName:"Banguis", 
+    firstName:"Mark Vergel",
+    userName:"markzoldyck",
+    password:"markymarks"
+  }) {
+    _id
+    lastName
+    firstName
+    userName
+    password
+  }
+}
+
+
+query findManyUsers {
+  users {
+    userName
+    _id
+  }
+}
+
+query FindUser {
+  user(id:"607522e7a130cc0c8016e5f9"){
+    _id
+    userName
+    lastName
+    firstName
+    password
+  }
+}
+
+
+mutation Login {
+  login(password:"markymarks", username:"markzoldyck") {
+   access_token
+  }
+}
+
+mutation delete {
+  deleteUser(id:"123123123") {
+   access_token
+  }
+}

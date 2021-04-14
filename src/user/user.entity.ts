@@ -1,3 +1,4 @@
+import { PostEntity } from './../post/post.entity';
 import { Entity, Column, ObjectIdColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity("users")
@@ -17,6 +18,9 @@ export class UserEntity {
 
   @Column()
   password: string;
+
+  // @Column(type => PostEntity)
+  // posts: PostEntity;
 
   @CreateDateColumn()
   createdAt?: Date;

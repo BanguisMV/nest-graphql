@@ -1,24 +1,31 @@
+import { UserService } from './../user/user.service';
+import { PostEntity } from './post.entity';
+import { AuthGuard } from './../auth/auth.guard';
 import { Post, CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
-import { Resolver, Query, Args,Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Args,Mutation, Context, ResolveField, Parent } from '@nestjs/graphql';
 import { PostService } from './post.service';
+import { UseGuards } from '@nestjs/common';
+import { User } from 'src/user/user.types';
 
 @Resolver(() => Post)
+
 export class PostResolver {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService, private readonly userService: UserService) {}
 
   @Mutation(() => Post)
-  createPost(@Args('createPostInput') createPostInput: CreatePostInput) {
-    return this.postService.create(createPostInput);
+  @UseGuards(AuthGuard)
+  createPost(@Args('createPostInput') createPostInput: CreatePostInput, @Context('user') user:any) {
+    return this.postService.create(createPostInput, user.id);
   }
   
   @Query(() => [Post], { name: 'posts' })
-  findAll(): Promise<Post[]> {
+  findAll(): Promise<PostEntity[]> {
     return this.postService.findAll();
   }
 
 
   @Query(() => Post, { name: 'post' })
-  findOne(@Args('id', { type: () => String }) id: string): Promise<Post> {
+  findOne(@Args('id', { type: () => String }) id: string): Promise<PostEntity> {
     return this.postService.findOne(id);
   }
 
@@ -32,4 +39,10 @@ export class PostResolver {
     return this.postService.remove(id);
   }
 
+  @ResolveField(() => User, { name: 'author' })
+  async author(@Parent() parent: any) {
+    console.log(parent)
+    const { author } = parent;
+    return this.userService.findUserByID( author );
+  }
 }

@@ -1,3 +1,4 @@
+import { Post } from './../post/post.types';
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ObjectType, Field, ID, InputType } from '@nestjs/graphql';
 
@@ -19,6 +20,9 @@ export class User {
 
   @Field()
   password: string;
+
+  @Field(type => [Post],{ nullable: true })
+  posts: Post;
 
   @Field({ nullable: true })
   createdAt?: Date;
@@ -58,4 +62,11 @@ export class CreateUserInput {
 export class DeleteNotication {
   @Field({ nullable: true })
   message:string
+}
+
+
+@ObjectType()
+export class JWT {
+  @Field({ nullable: true })
+  access_token:string
 }

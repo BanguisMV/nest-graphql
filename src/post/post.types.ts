@@ -1,14 +1,18 @@
-import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { User } from './../user/user.types';
+import { CreateDateColumn, UpdateDateColumn, ObjectID, OneToMany } from 'typeorm';
 import { ObjectType, Field, ID, InputType, PartialType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Post {
 
   @Field(type => ID,{ nullable: true })
-  _id?: string;
+  _id?: ObjectID;
 
   @Field()
   content: string;
+
+  @Field(type => User)
+  author: User;
 
   @Field({ nullable: true })
   createdAt?: Date;
@@ -40,7 +44,7 @@ export class UpdatePostInput extends PartialType(CreatePostInput) {
     @UpdateDateColumn()
     updatedAt?: Date;
     
-  }
+}
   
 @ObjectType()
 export class DeleteNotication {
