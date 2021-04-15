@@ -1,5 +1,6 @@
 import { Post } from './../post/post.types';
 import { ObjectType, Field, ID, InputType, PartialType } from '@nestjs/graphql';
+import { IsNotEmpty, MinLength, MaxLength, IsString } from 'class-validator';
 
 
 @ObjectType()
@@ -37,15 +38,29 @@ export class CreateUserInput {
 
 
   @Field()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100, {message:"Firstname is too long. 100 Characters Only"})
   firstName?: string;
 
   @Field()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(100, {message:"Lastname is too long. 100 Characters Only"})
   lastName?: string;
 
   @Field()
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5, {message:"Username is too short. 5 Characters is the minimum"})
+  @MaxLength(100, {message:"Username is too long. 100 Characters Only"})
   userName?: string;
 
   @Field()
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5, {message:"Password is too short. 5 Characters is the minimum"})
+  @MaxLength(1500, {message:"Password is too long, 120 Characters Only"})
   password?: string;
 
 }

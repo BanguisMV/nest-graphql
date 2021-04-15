@@ -4,7 +4,7 @@ import { AuthGuard } from './../auth/auth.guard';
 import { Post, CreatePostInput, UpdatePostInput, DeleteNotication } from './post.types';
 import { Resolver, Query, Args,Mutation, Context, ResolveField, Parent } from '@nestjs/graphql';
 import { PostService } from './post.service';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, CanActivate } from '@nestjs/common';
 import { UserType } from 'src/user/user.types';
 
 @Resolver(() => Post)
@@ -30,18 +30,22 @@ export class PostResolver {
   }
 
   @Mutation(() => Post)
-  updatePost(@Args('id') id: string, @Args('body') body:UpdatePostInput ) {
-    return this.postService.update(id,body);
+  @UseGuards(AuthGuard)
+  updatePost(@Args('id') id: string, @Args('body') body:UpdatePostInput, 
+            @Context('user') user:UserType ) {
+    return this.postService.update(id,body,user);
   }
 
+  @UseGuards(AuthGuard)
   @Mutation(() => DeleteNotication)
-  deletePost(@Args('id') id: string): Promise<DeleteNotication | void> {
-    return this.postService.remove(id);
+  deletePost(@Args('id') id: string, 
+            @Context('user') user:UserType): Promise<DeleteNotication | void> {
+    return this.postService.remove(id,user);
   }
 
-  // @ResolveField(() => UserType, { name: 'author' })
-  // async author(@Parent() parent: any) {
-  //   const { author } = parent;
-  //   return this.userService.findUserByID( author );
-  // }
+  @ResolveField(() => UserType, { name: 'author' })
+  async author(@Parent() parent: any) {
+    const { author } = parent;
+    return this.userService.findUserByID( author );
+  }
 }

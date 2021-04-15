@@ -8,16 +8,17 @@ export type PostDocument = Post & Document;
 @Schema()
 export class Post {
 
+
   @Prop()
   content: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   author: User;
 
-  @Prop({type: Date})
+  @Prop({timestamps: { createdAt: 'created_at' }})
   createdAt?: Date;
 
-  @Prop({type: Date})
+  @Prop({timestamps: { updateddAt: 'updated_at' }})
   updatedAt?: Date;
 
 }

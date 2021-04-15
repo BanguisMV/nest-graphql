@@ -1,12 +1,12 @@
+import { IsNotEmpty, MaxLength, Min, MinLength } from 'class-validator';
 import { UserType } from './../user/user.types';
-import { CreateDateColumn, UpdateDateColumn, ObjectID, OneToMany } from 'typeorm';
 import { ObjectType, Field, ID, InputType, PartialType } from '@nestjs/graphql';
 
 @ObjectType()
 export class Post {
 
   @Field(type => ID,{ nullable: true })
-  _id?: ObjectID;
+  _id?: string;
 
   @Field()
   content: string;
@@ -27,21 +27,19 @@ export class Post {
 export class CreatePostInput {
 
   @Field()
+  @IsNotEmpty()
+  @MaxLength(500, {message:"Content is too long"})
   content: string;
-
-  @CreateDateColumn({ type: 'timestamp', name: 'created_date', default: () => 'LOCALTIMESTAMP' })
-  createdAt?: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', name: 'updated_date', default: () => 'LOCALTIMESTAMP' })
-  updatedAt?: Date;
 
 }
 
 @InputType()
 export class UpdatePostInput extends PartialType(CreatePostInput) {
+  
+    @Field({ nullable: true })
+    createdAt?:Date;
 
     @Field({ nullable: true })
-    @UpdateDateColumn()
     updatedAt?: Date;
     
 }

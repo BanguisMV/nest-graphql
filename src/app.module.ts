@@ -3,8 +3,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
-import { AuthService } from './auth/auth.service';
-import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
@@ -14,8 +12,13 @@ import { MongooseModule } from '@nestjs/mongoose';
       headers: req.headers
     }))
   }), 
-  MongooseModule.forRoot('mongodb://localhost/blog'), PostModule, UserModule, AuthModule],
+  MongooseModule.forRoot('mongodb://localhost/blog', { 
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify:false
+  }), 
+  PostModule, UserModule],
   controllers: [],
-  providers: [AuthService],
+  providers: [],
 })
 export class AppModule {}

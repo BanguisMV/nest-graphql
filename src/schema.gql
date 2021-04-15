@@ -62,6 +62,7 @@ input CreatePostInput {
 
 input UpdatePostInput {
   content: String
+  createdAt: DateTime
   updatedAt: DateTime
 }
 
